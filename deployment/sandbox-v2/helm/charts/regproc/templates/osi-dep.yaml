@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.services.osi.serviceName }} 
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }} 
   labels:
     app: {{ .Values.services.osi.serviceName }}
     
@@ -23,6 +23,7 @@ spec:
         app: {{ .Values.services.osi.serviceName }} 
         component: service-hazelcast-server
     spec:
+      {{- include "dockerHubSecret" .  | indent 6}}
       containers:
       - name: {{ .Values.services.osi.serviceName }} 
         image: {{ .Values.services.osi.dockerImage }}
@@ -38,6 +39,8 @@ spec:
           value: {{ .Values.artifactoryUrl }} 
         - name: is_glowroot_env
           value: {{ .Values.isGlowroot }}
+        - name: mosipbox_public_url
+          value: {{ .Values.sitePublicUrl }}
         ports:
         - name: eventbus-port
           containerPort: {{ .Values.services.osi.ports.eventbusPort }}

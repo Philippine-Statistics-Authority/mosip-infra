@@ -1,11 +1,11 @@
-namespace: default
 component: regproc
 part-of: mosip
 activeProfileEnv: mz 
-springConfigLabel: master
-configServerUrl: http://config-server/config
+springConfigLabel: {{ config_repo.branch }} 
+configServerUrl: {{ config_server.internal_url }}
 storageClass: dm-storage-class  # See sc, pv templates
 
+sitePublicUrl: {{ site.sandbox_public_url }}
 probe:
   initialDelay: 180  # Seconds
   period: 30 # Seconds
@@ -14,12 +14,15 @@ ingress:
    namespace: default
 
 artifactoryUrl: {{ artifactory_url }} 
+iamAdapterUrl: {{ iam_adapter_url }}
 
 imagePullPolicy: Always 
 
-domainName: {{ sandbox_domain_name }}
-internalDomain: {{ clusters.mz.nodeport_node }} 
 isGlowroot: {{ is_glowroot }} 
+
+dockerHub:
+  private: {{ docker_hub.private }}  
+  keyname: {{ docker_hub.keyname }}
 
 services:
   camel:
@@ -104,14 +107,6 @@ services:
       containerPort: 9096
     ingressPath: '' 
     healthUrl: /registrationprocessor/v1/biodedupe/actuator/health
-  biosvc:
-    serviceName: {{ versions.services.regproc.biosvc.keys()[0] }} 
-    dockerImage: {{ versions.services.regproc.biosvc.values()[0] }}
-    ports:
-      containerPort: 9097
-      servicePort: 80
-    ingressPath: /registrationprocessor/v1/bio-dedupe
-    healthUrl: /registrationprocessor/v1/bio-dedupe/actuator/health
   bioauth:
     serviceName: {{ versions.services.regproc.bioauth.keys()[0] }} 
     dockerImage: {{ versions.services.regproc.bioauth.values()[0] }}
@@ -201,14 +196,6 @@ services:
       containerPort: 8099
     ingressPath: '' 
     healthUrl: /registrationprocessor/v1/print-stage/actuator/health
-  printsvc:
-    serviceName: {{ versions.services.regproc.printsvc.keys()[0] }} 
-    dockerImage: {{ versions.services.regproc.printsvc.values()[0] }}
-    ports:
-      containerPort: 9099
-      servicePort: 80
-    ingressPath: /registrationprocessor/v1/print/
-    healthUrl: /registrationprocessor/v1/print/actuator/health
   trans:
     serviceName: {{ versions.services.regproc.trans.keys()[0] }} 
     dockerImage: {{ versions.services.regproc.trans.values()[0] }}
@@ -217,11 +204,3 @@ services:
       servicePort: 80
     ingressPath: /registrationprocessor/v1/registrationtransaction/
     healthUrl: /registrationprocessor/v1/registrationtransaction/actuator/health
-  request: 
-    serviceName: {{ versions.services.regproc.request.keys()[0] }} 
-    dockerImage: {{ versions.services.regproc.request.values()[0] }}
-    ports:
-      containerPort: 8082
-      servicePort: 80
-    ingressPath: /registrationprocessor/v1/requesthandler/
-    healthUrl: /registrationprocessor/v1/requesthandler/actuator/health

@@ -1,9 +1,8 @@
-namespace: default
 component: ida
 part-of: mosip
 activeProfileEnv: mz 
-springConfigLabel: master
-configServerUrl: http://config-server/config
+springConfigLabel: {{ config_repo.branch }} 
+configServerUrl: {{ config_server.internal_url }}
 ingress:
    namespace: default
 artifactoryUrl: {{ artifactory_url }} 
@@ -11,9 +10,15 @@ probe:
   initialDelay: 60  # Seconds
   period: 30 # Seconds
 imagePullPolicy: Always
-domainName: {{ sandbox_domain_name }}
-internalDomain: {{ clusters.mz.nodeport_node }} 
+
+sitePublicUrl: {{ site.sandbox_public_url }}
+
 isGlowroot: {{ is_glowroot }} 
+
+dockerHub:
+  private: {{ docker_hub.private }}  
+  keyname: {{ docker_hub.keyname }}
+
 services:
   auth:
     serviceName: {{ versions.services.ida.auth.keys()[0] }} 
@@ -49,14 +54,8 @@ services:
     healthUrl: /idauthentication/v1/otp/actuator/health
 
 generators:
-  key:  
-    name: {{ versions.services.ida.key.keys()[0] }} 
-    dockerImage: {{ versions.services.ida.key.values()[0] }}
+  keygen:  
+    name: {{ versions.services.ida.keygen.keys()[0] }} 
+    dockerImage: {{ versions.services.ida.keygen.values()[0] }}
     hsmUrl: tcp://softhsm-ida:80   
-  hashsalt:  
-    name: {{ versions.services.ida.hashsalt.keys()[0] }} 
-    dockerImage: {{ versions.services.ida.hashsalt.values()[0] }}
-  encryptsalt:  
-    name: {{ versions.services.ida.encryptsalt.keys()[0] }} 
-    dockerImage: {{ versions.services.ida.encryptsalt.values()[0] }}
    

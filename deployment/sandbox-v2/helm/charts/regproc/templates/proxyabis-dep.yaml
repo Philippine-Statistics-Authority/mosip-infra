@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.services.proxyabis.serviceName }} 
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }} 
   labels:
     app: {{ .Values.services.proxyabis.serviceName }}
 spec:
@@ -21,6 +21,7 @@ spec:
       labels:
         app: {{ .Values.services.proxyabis.serviceName }} 
     spec:
+      {{- include "dockerHubSecret" .  | indent 6}}
       containers:
       - name: {{ .Values.services.proxyabis.serviceName }} 
         image: {{ .Values.services.proxyabis.dockerImage }}
@@ -36,6 +37,8 @@ spec:
           value: {{ .Values.artifactoryUrl }} 
         - name: is_glowroot_env
           value: {{ .Values.isGlowroot }}
+        - name: mosipbox_public_url
+          value: {{ .Values.sitePublicUrl }}
         ports:
         - name: verticle-port
           containerPort: {{ .Values.services.proxyabis.ports.containerPort }}

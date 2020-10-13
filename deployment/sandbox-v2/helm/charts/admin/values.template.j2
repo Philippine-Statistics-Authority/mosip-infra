@@ -1,10 +1,8 @@
-namespace: default
 component: admin
 part-of: mosip
 activeProfileEnv: mz 
-springConfigLabel: master
-configServerUrl: http://config-server/config
-sandboxDomainName: test-sandbox.southindia.cloudapp.azure.com
+springConfigLabel: {{ config_repo.branch }} 
+configServerUrl: {{ config_server.internal_url }}
 ingress:
    namespace: default
 artifactoryUrl: {{ artifactory_url }} 
@@ -12,9 +10,14 @@ probe:
   initialDelay: 30  # Seconds
   period: 30 # Seconds
 imagePullPolicy: Always
-domainName: {{ sandbox_domain_name }}
+sitePublicUrl: {{ site.sandbox_public_url }}
 internalDomain: {{ clusters.mz.nodeport_node }} 
 isGlowroot: {{ is_glowroot }} 
+
+dockerHub:
+  private: {{ docker_hub.private }}  
+  keyname: {{ docker_hub.keyname }}
+
 services:
   admin: 
     serviceName: {{ versions.services.admin.service.keys()[0] }}
@@ -29,5 +32,5 @@ services:
     containerPort: 80
     servicePort: 80
     configName: admin-ui-config # ConfigMap name
-    apiHost: https://{{ sandbox_domain_name }}/v1/
+    apiHost: {{ site.sandbox_public_url }}/v1/
     ingressPath: /admin-ui

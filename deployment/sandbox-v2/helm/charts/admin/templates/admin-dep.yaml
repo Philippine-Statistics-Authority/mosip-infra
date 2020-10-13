@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.services.admin.serviceName }} 
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }} 
   labels:
     app: {{ .Values.services.admin.serviceName }}
     component: {{ .Values.component }} 
@@ -24,6 +24,7 @@ spec:
         app: {{ .Values.services.admin.serviceName }} 
         component: {{ .Values.component }} 
     spec:
+      {{- include "dockerHubSecret" .  | indent 6}}
       containers:
       - name: {{ .Values.services.admin.serviceName }} 
         image: {{ .Values.services.admin.dockerImage }} 
@@ -39,6 +40,8 @@ spec:
           value: {{ .Values.artifactoryUrl }} 
         - name: is_glowroot_env
           value: {{ .Values.isGlowroot }}
+        - name: mosipbox_public_url
+          value: {{ .Values.sitePublicUrl }}
         ports:
         - containerPort: {{ .Values.services.admin.containerPort }}
         readinessProbe:

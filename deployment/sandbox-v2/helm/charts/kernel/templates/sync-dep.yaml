@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.services.sync.serviceName }} 
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }} 
   labels:
     app: {{ .Values.services.sync.serviceName }}
     component: {{ .Values.component }} 
@@ -24,6 +24,7 @@ spec:
         app: {{ .Values.services.sync.serviceName }} 
         component: {{ .Values.component }} 
     spec:
+      {{- include "dockerHubSecret" .  | indent 6}}
       containers:
       - name: {{ .Values.services.sync.serviceName }} 
         image: {{ .Values.services.sync.dockerImage }}
@@ -39,6 +40,8 @@ spec:
           value: {{ .Values.artifactoryUrl }} 
         - name: is_glowroot_env
           value: {{ .Values.isGlowroot }} 
+        - name: iam_adapter_url_env
+          value: {{ .Values.iamAdapterUrl }}
         ports:
         - containerPort: {{ .Values.services.sync.containerPort }}
         readinessProbe:

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.services.pktserver.serviceName }} 
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }} 
   labels:
     app: {{ .Values.services.pktserver.serviceName }}
 spec:
@@ -21,6 +21,7 @@ spec:
       labels:
         app: {{ .Values.services.pktserver.serviceName }} 
     spec:
+      {{- include "dockerHubSecret" .  | indent 6}}
       containers:
       - name: {{ .Values.services.pktserver.serviceName }} 
         image: {{ .Values.services.pktserver.dockerImage }}

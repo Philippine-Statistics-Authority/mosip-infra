@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.services.camel.serviceName }} 
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }} 
   labels:
     app: {{ .Values.services.camel.serviceName }}
 spec:
@@ -22,6 +22,7 @@ spec:
         app: {{ .Values.services.camel.serviceName }} 
         component: service-hazelcast-server
     spec:
+      {{- include "dockerHubSecret" .  | indent 6}}
       containers:
       - name: {{ .Values.services.camel.serviceName }} 
         image: {{ .Values.services.camel.dockerImage }}
@@ -39,6 +40,8 @@ spec:
           value: secure 
         - name: is_glowroot_env
           value: {{ .Values.isGlowroot }}
+        - name: mosipbox_public_url
+          value: {{ .Values.sitePublicUrl }}
         ports:
         - name: eventbus-port
           containerPort: {{ .Values.services.camel.ports.eventbusPort }}
